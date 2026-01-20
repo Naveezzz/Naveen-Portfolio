@@ -1,61 +1,31 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
-const CursorGlow = () => {
-    const [isVisible, setIsVisible] = useState(false);
-    const cursorRef = useRef(null);
-    const throttleTimer = useRef(null);
+export function CursorGlow() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-    const handleMouseMove = useCallback((event) => {
-        if (cursorRef.current) {
-            cursorRef.current.style.left = `${event.pageX}px`;
-            cursorRef.current.style.top = `${event.pageY}px`;
-        }
-    }, []);
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-    const throttledMouseMove = useCallback((event) => {
-        if (!throttleTimer.current) {
-            handleMouseMove(event);
-            throttleTimer.current = setTimeout(() => {
-                throttleTimer.current = null;
-            }, 16);
-        }
-    }, [handleMouseMove]);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
-    useEffect(() => {
-        const handleResize = () => {
-            setIsVisible(window.innerWidth >= 1024);
-        };
-
-        window.addEventListener('resize', handleResize);
-        handleResize();
-        window.addEventListener('mousemove', throttledMouseMove);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('mousemove', throttledMouseMove);
-            clearTimeout(throttleTimer.current);
-        };
-    }, [throttledMouseMove]);
-
-    return (
-        isVisible && (
-            <motion.div
-                ref={cursorRef}
-                className="cursor-glow"
-                style={{
-                    position: 'fixed',
-                    borderRadius: '50%',
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: 'rgba(255,255,255,0.7)',
-                    willChange: 'transform, opacity',
-                    pointerEvents: 'none',
-                    zIndex: 9999,
-                }}
-            />
-        )
-    );
-};
-
-export default CursorGlow;
+  return (
+    <motion.div
+      className="cursor-glow hidden lg:block"
+      animate={{
+        x: mousePosition.x,
+        y: mousePosition.y,
+      }}
+      transition={{
+        type: "spring",
+        stiffness: 150,
+        damping: 15,
+        mass: 0.1,
+      }}
+    />
+  );
+}

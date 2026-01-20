@@ -1,47 +1,115 @@
-import React, { useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { ReactNode, useRef } from 'react';
 
-// Optimized FadeIn component
-const FadeIn = React.memo(({ children, duration = 0.5, delay = 0 }) => {
-    const style = useMemo(() => ({
-        opacity: 0,
-        transition: `opacity ${duration}s ${delay}s`
-    }), [duration, delay]);
+interface FadeInProps {
+  children: ReactNode;
+  direction?: 'up' | 'down' | 'left' | 'right';
+  delay?: number;
+  className?: string;
+}
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            style.opacity = 1;
-        }, delay * 1000);
+export function FadeIn({ children, direction = 'up', delay = 0, className = '' }: FadeInProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-        return () => clearTimeout(timer);
-    }, [delay, style]);
+  const directions = {
+    up: { y: 40, x: 0 },
+    down: { y: -40, x: 0 },
+    left: { x: 40, y: 0 },
+    right: { x: -40, y: 0 },
+  };
 
-    return <motion.div style={style}>{children}</motion.div>;
-});
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, ...directions[direction] }}
+      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...directions[direction] }}
+      transition={{ duration: 0.6, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
-// Optimized Parallax component
-const Parallax = React.memo(({ children, speed }) => {
-    const parallaxStyle = useMemo(() => ({
-        willChange: 'transform',
-        transform: `translateY(${speed}%)`
-    }), [speed]);
+interface ParallaxProps {
+  children: ReactNode;
+  speed?: number;
+  className?: string;
+}
 
-    return <motion.div style={parallaxStyle}>{children}</motion.div>;
-});
+export function Parallax({ children, speed = 0.5, className = '' }: ParallaxProps) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  });
 
-// Optimized ScaleOnScroll component
-const ScaleOnScroll = React.memo(({ children, scale = 1, scrollPosition }) => {
-    const scaleStyle = useMemo(() => ({
-        willChange: 'transform',
-        transform: `scale(${scale})`
-    }), [scale]);
+  const y = useTransform(scrollYProgress, [0, 1], [100 * speed, -100 * speed]);
 
-    return <motion.div style={scaleStyle}> {children} </motion.div>;
-});
+  return (
+    <motion.div ref={ref} style={{ y }} className={className}>
+      {children}
+    </motion.div>
+  );
+}
 
-// Optimized StaggerChildren animation
-const StaggerChildren = React.memo(({ children, staggerAmount }) => {
-    return <motion.div animate={{ transition: { staggerChildren: staggerAmount } }}>{children}</motion.div>;
-});
+interface ScaleOnScrollProps {
+  children: ReactNode;
+  className?: string;
+}
 
-export { FadeIn, Parallax, ScaleOnScroll, StaggerChildren };
+export function ScaleOnScroll({ children, className = '' }: ScaleOnScrollProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+interface StaggerChildrenProps {
+  children: ReactNode;
+  className?: string;
+  staggerDelay?: number;
+}
+
+export function StaggerChildren({ children, className = '', staggerDelay = 0.1 }: StaggerChildrenProps) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-50px' });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: staggerDelay,
+          },
+        },
+      }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+export const staggerChild = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
+  },
+};
