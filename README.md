@@ -1,26 +1,3 @@
-# Welcome to your Lovable project
-
-## Project info
-
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
@@ -58,16 +35,13 @@ This project is built with:
 - TypeScript
 - React
 - shadcn-ui
-- Tailwind CSS
+- Tailwind CSS<img width="1920" height="1080" alt="Screenshot (1346)" src="https://github.com/user-attachments/assets/3b7d52ae-c363-4ef1-a126-88445691c3a7" />
+<img width="1920" height="1080" alt="Screenshot (1347)" src="https://github.com/user-attachments/assets/d41227cd-118b-4177-93a0-0db0902b242d" />
+<img width="1920" height="1080" alt="Screenshot (1348)" src="https://github.com/user-attachments/assets/e4c71845-b57b-4dfc-a24f-4d24bc070fac" />
+<img width="1920" height="1080" alt="Screenshot (1349)" src="https://github.com/user-attachments/assets/9bb064eb-bc57-4672-a57e-47aec45c6d70" />
+<img width="1920" height="1080" alt="Screenshot (1350)" src="https://github.com/user-attachments/assets/d045b87a-33a0-410c-898d-ea0325f40e1d" />
+<img width="1920" height="1080" alt="Screenshot (1351)" src="https://github.com/user-attachments/assets/f20e959f-5c24-423a-ad2b-dad79e3e5609" />
+<img width="1920" height="1080" alt="Screenshot (1352)" src="https://github.com/user-attachments/assets/f4590c95-3183-4ab2-bf57-d1989012dc2d" />
+<img width="1920" height="1080" alt="Screenshot (1353)" src="https://github.com/user-attachments/assets/ecb788a3-617f-4c5b-9c9a-6db06a1d1ded" />
+<img width="1920" height="1080" alt="Screenshot (1354)" src="https://github.com/user-attachments/assets/f4eaf141-6aab-42aa-a939-e12c4d950897" />
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
