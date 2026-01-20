@@ -1,44 +1,61 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { motion } from 'framer-motion';
 
-const CursorGlow: React.FC = () => {
-  const [visible, setVisible] = useState(true);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+const CursorGlow = () => {
+    const [isVisible, setIsVisible] = useState(false);
+    const cursorRef = useRef(null);
+    const throttleTimer = useRef(null);
 
-  const handleMouseMove = (e: MouseEvent) => {
-    // Throttle the mouse movement
-    setPosition({ x: e.clientX, y: e.clientY });
-  };
+    const handleMouseMove = useCallback((event) => {
+        if (cursorRef.current) {
+            cursorRef.current.style.left = `${event.pageX}px`;
+            cursorRef.current.style.top = `${event.pageY}px`;
+        }
+    }, []);
 
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+    const throttledMouseMove = useCallback((event) => {
+        if (!throttleTimer.current) {
+            handleMouseMove(event);
+            throttleTimer.current = setTimeout(() => {
+                throttleTimer.current = null;
+            }, 16);
+        }
+    }, [handleMouseMove]);
 
-  useEffect(() => {
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('visibilitychange', toggleVisibility);
+    useEffect(() => {
+        const handleResize = () => {
+            setIsVisible(window.innerWidth >= 1024);
+        };
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('visibilitychange', toggleVisibility);
-    };
-  }, []);
+        window.addEventListener('resize', handleResize);
+        handleResize();
+        window.addEventListener('mousemove', throttledMouseMove);
 
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: position.y,
-        left: position.x,
-        opacity: visible ? 1 : 0,
-        pointerEvents: 'none',
-        willChange: 'transform, opacity', // for better performance
-        transition: 'opacity 0.2s'
-      }}
-    >
-      <div className="cursor-glow" />
-      {/* Add your glow effect here */}
-    </div>
-  );
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('mousemove', throttledMouseMove);
+            clearTimeout(throttleTimer.current);
+        };
+    }, [throttledMouseMove]);
+
+    return (
+        isVisible && (
+            <motion.div
+                ref={cursorRef}
+                className="cursor-glow"
+                style={{
+                    position: 'fixed',
+                    borderRadius: '50%',
+                    width: '20px',
+                    height: '20px',
+                    backgroundColor: 'rgba(255,255,255,0.7)',
+                    willChange: 'transform, opacity',
+                    pointerEvents: 'none',
+                    zIndex: 9999,
+                }}
+            />
+        )
+    );
 };
 
 export default CursorGlow;
