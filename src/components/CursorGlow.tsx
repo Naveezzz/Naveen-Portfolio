@@ -1,31 +1,44 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
 
-export function CursorGlow() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+const CursorGlow: React.FC = () => {
+  const [visible, setVisible] = useState(true);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: MouseEvent) => {
+    // Throttle the mouse movement
+    setPosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const toggleVisibility = () => {
+    setVisible(!visible);
+  };
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('visibilitychange', toggleVisibility);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('visibilitychange', toggleVisibility);
+    };
   }, []);
 
   return (
-    <motion.div
-      className="cursor-glow hidden lg:block"
-      animate={{
-        x: mousePosition.x,
-        y: mousePosition.y,
+    <div
+      style={{
+        position: 'fixed',
+        top: position.y,
+        left: position.x,
+        opacity: visible ? 1 : 0,
+        pointerEvents: 'none',
+        willChange: 'transform, opacity', // for better performance
+        transition: 'opacity 0.2s'
       }}
-      transition={{
-        type: "spring",
-        stiffness: 150,
-        damping: 15,
-        mass: 0.1,
-      }}
-    />
+    >
+      <div className="cursor-glow" />
+      {/* Add your glow effect here */}
+    </div>
   );
-}
+};
+
+export default CursorGlow;
